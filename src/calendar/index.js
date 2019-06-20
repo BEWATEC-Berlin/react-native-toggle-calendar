@@ -3,9 +3,7 @@ import {
   View,
   ViewPropTypes,
   ScrollView,
-  Dimensions,
-  ActivityIndicator,
-  Platform
+  Dimensions
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -28,14 +26,6 @@ const EmptyArray = [];
 
 // horizontal calendar will be scrolled to (offset * viewport width) to keep selected date visible
 let horizontalScrollViewOffset = 0;
-
-// to throttle back-to-back triggering of onPressArrowRight in horizontal calendar
-let onPressArrowRightTriggered = false;
-
-// to throttle back-to-back triggering of onPressArrowLeft in horizontal calendar
-let onPressArrowLeftTriggered = false;
-
-const timezoneOffset =  new Date().getTimezoneOffset() * 60 * 1000;
 
 class Calendar extends Component {
   static propTypes = {
@@ -100,21 +90,7 @@ class Calendar extends Component {
     // Handler which gets executed when press grid icon. It will set calendar to grid
     onPressGridView: PropTypes.func,
     // to show horizontal calendar with scroll
-    horizontal: PropTypes.bool,
-    // to automatically scroll horizontal calendar to keep selected date in view
-    autoHorizontalScroll: PropTypes.bool,
-    // how many past days to be shown, if this is set - autoHorizontalScroll will not work
-    showPastDatesInHorizontal: PropTypes.number,
-    // offset to decide when to trigger onPressArrowRight in horizontal calendar,
-    // 0 means when rightmost day is reached, undefined means no auto onPressArrowRight triggering
-    horizontalEndReachedThreshold: PropTypes.number,
-    // offset to decide when to trigger onPressArrowLeft in horizontal calendar,
-    // 0 means when leftmost day is reached, undefined means no auto onPressArrowLeft triggering
-    horizontalStartReachedThreshold: PropTypes.number,
-    // to show a loader
-    loading: PropTypes.bool,
-    // provide a custom loader component
-    LoaderComponent: PropTypes.any
+    horizontal: PropTypes.bool
   };
 
   constructor(props) {
@@ -136,13 +112,14 @@ class Calendar extends Component {
     this.pressDay = this.pressDay.bind(this);
     this.longPressDay = this.longPressDay.bind(this);
     this.shouldComponentUpdate = shouldComponentUpdate;
-    this.onHorizontalCalendarScroll =
-      this.onHorizontalCalendarScroll.bind(this);
+    this.showDay = null;
+    this.widthDay = 12;
+
     this.horizontalScrollViewRef = React.createRef();
   }
 
   componentWillReceiveProps(nextProps) {
-    const current= parseDate(nextProps.current);
+    const current = parseDate(nextProps.current);
     if (current && current.toString('yyyy MM') !== this.state.currentMonth.toString('yyyy MM')) {
       this.setState({
         currentMonth: current.clone()
@@ -154,14 +131,23 @@ class Calendar extends Component {
   }
 
   // scroll the horizontal calendar so that selected date is visible
-  componentDidUpdate() {
+  componentDidMount() {
+    this.showDay = setTimeout(() => {
+      this.showCurrentDay();
+    }, 600);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.showDay);
+    
+  }
+
+  showCurrentDay() {
     const horizontalScrollView = this.horizontalScrollViewRef.current;
-    if (horizontalScrollView
-      && this.props.autoHorizontalScroll
-      && (this.props.showPastDatesInHorizontal === undefined)) {
-      const windowWidth = Dimensions.get('window').width;
+    const day = xdateToData(this.props.current).day;
+    if (horizontalScrollView) {
       horizontalScrollView.scrollTo({
-        x: horizontalScrollViewOffset * windowWidth,
+        x: ((day - 1) * this.widthDay),
         animated: true
       });
     }
@@ -234,7 +220,11 @@ class Calendar extends Component {
     const DayComp = this.getDayComponent();
     const date = day.getDate();
     return (
-      <View style={{flex: 1, alignItems: 'center'}} key={id}>
+      <View
+        style={{flex: 1, alignItems: 'center'}}
+        key={id}
+        onLayout={({ nativeEvent }) => this.widthDay = nativeEvent.layout.width}
+      >
         <DayComp
           state={state}
           theme={this.props.theme}
@@ -244,67 +234,11 @@ class Calendar extends Component {
           marking={this.getDateMarking(day)}
           horizontal={this.props.horizontal}
           current={this.props.current}
-          showPastDatesInHorizontal={this.props.showPastDatesInHorizontal}
         >
           {date}
         </DayComp>
       </View>
     );
-  }
-
-  onHorizontalCalendarScroll({ nativeEvent }) {
-    const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
-    const endReachedThreshold = this.props.horizontalEndReachedThreshold;
-    const startReachedThreshold = this.props.horizontalStartReachedThreshold;
-    const contentWidth = contentSize.width;
-    const travelledWidth = layoutMeasurement.width + contentOffset.x;
-    const horizontalScrollView = this.horizontalScrollViewRef.current;
-    let calendarUpdated = false;
-
-    // going left
-    if (contentOffset.x === startReachedThreshold
-      && !onPressArrowLeftTriggered) {
-      if (this.props.showPastDatesInHorizontal !== undefined) {
-        // don't auto select previous month when past dates are hidden
-        const selectedMonthTime = this.state.currentMonth.getTime();
-        const oneDayTime = (24 * 3600 * 1000);
-        const nextValidTime = new Date().setHours(0,0,0,0)
-          + oneDayTime
-          + timezoneOffset;
-        if (selectedMonthTime > nextValidTime) {
-          calendarUpdated = true;
-        }
-      } else {
-        calendarUpdated = true;
-      }
-      if (calendarUpdated) {
-        this.props.onPressArrowLeft(this.state.currentMonth, this.addMonth);
-        onPressArrowLeftTriggered = true;
-        onPressArrowRightTriggered = true;
-        setTimeout(() => {
-          onPressArrowLeftTriggered = false;
-          onPressArrowRightTriggered = false;
-        }, 500);
-      }
-    }
-
-    // going right
-    if (endReachedThreshold
-      && (travelledWidth + endReachedThreshold) > contentWidth
-      && !onPressArrowRightTriggered) {
-      this.props.onPressArrowRight(this.state.currentMonth, this.addMonth);
-      calendarUpdated = true;
-      onPressArrowRightTriggered = true;
-      setTimeout(() => {
-        onPressArrowRightTriggered = false;
-      }, 500);
-    }
-
-    if (calendarUpdated && horizontalScrollView) {
-      horizontalScrollView.scrollTo({
-        x: 50, animated: false
-      });
-    }
   }
 
   getDayComponent() {
@@ -344,28 +278,13 @@ class Calendar extends Component {
 
   renderWeek(days, id) {
     const week = [];
-    let validTime = new Date().setHours(0,0,0,0); // ignoring hours, mins, secs, msecs
-    if (this.props.showPastDatesInHorizontal !== undefined) {
-      validTime -= this.props.showPastDatesInHorizontal * (24 * 60 * 60 * 1000);
-    }
     days.forEach((day, id2) => {
-      const dayTime = day.getTime();
-
-      // don't show past days in horizontal calendar
-      if (this.state.horizontal
-        && this.props.showPastDatesInHorizontal !== undefined) {
-        if (dayTime >= validTime) {
-          week.push(this.renderDay(day, id2));
-        }
-      } else {
-        week.push(this.renderDay(day, id2));
-      }
+      week.push(this.renderDay(day, id2));
 
       // if day is selected (aka current) day then corresponding week row id will be offset
-      if (dayTime === parseDate(this.props.current).getTime()) {
+      if (day.getTime() === parseDate(this.props.current).getTime()) {
         horizontalScrollViewOffset = id;
       }
-
     }, this);
 
     if (this.props.showWeekNumbers) {
@@ -383,65 +302,6 @@ class Calendar extends Component {
     return CalendarHeader;
   }
 
-  showLoader() {
-    if (this.props.LoaderComponent) {
-      return <LoaderComponent />;
-    } else {
-      return (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <ActivityIndicator />
-        </View>
-      );
-    }
-  }
-
-  showCalendar(weeks) {
-    const windowWidth = Dimensions.get('window').width;
-    if (this.state.horizontal) {
-      return (
-        <ScrollView
-          contentContainerStyle={Platform.OS === 'web' ? { flex: 1 } : {}}
-          style={[this.style.monthView, { marginBottom: 10 }]}
-          horizontal
-          scrollEventThrottle={500}
-          onScroll={this.onHorizontalCalendarScroll}
-          ref={this.horizontalScrollViewRef}
-        >
-          {weeks}
-          {
-            this.props.loading ?
-              <View style={[
-                this.style.loaderContainer,
-                {
-                  width: windowWidth
-                }
-              ]}>
-                {
-                  this.showLoader()
-                }
-              </View>
-              : null
-          }
-        </ScrollView>
-      );
-    } else {
-      return (
-        <View style={this.style.monthView}>
-          {weeks}
-          {
-            this.props.loading ?
-              <View style={this.style.loaderContainer}>
-                {
-                  this.showLoader()
-                }
-              </View>
-              : null
-          }
-        </View>
-      );
-    }
-  }
-
   render() {
     const days = dateutils.page(this.state.currentMonth, this.props.firstDay);
     const weeks = [];
@@ -453,7 +313,7 @@ class Calendar extends Component {
     if (current) {
       const lastMonthOfDay = current.clone().addMonths(1, true).setDate(1).addDays(-1).toString('yyyy-MM-dd');
       if (this.props.displayLoadingIndicator &&
-        !(this.props.markedDates && this.props.markedDates[lastMonthOfDay])) {
+          !(this.props.markedDates && this.props.markedDates[lastMonthOfDay])) {
         indicator = true;
       }
     }
@@ -480,9 +340,16 @@ class Calendar extends Component {
           onPressGridView={this.props.onPressGridView}
         />
         {
-          this.showCalendar(weeks)
+          this.state.horizontal ?
+            <ScrollView 
+              style={[this.style.monthView, {marginBottom: 10}]}
+              horizontal
+              ref={this.horizontalScrollViewRef}
+            >
+              {weeks}
+            </ScrollView>
+            : <View style={this.style.monthView}>{weeks}</View>
         }
-
       </View>);
   }
 }
