@@ -344,6 +344,7 @@ class Calendar extends Component {
             <ScrollView 
               style={[this.style.monthView, {marginBottom: 10}]}
               horizontal
+              pagingEnabled
               ref={this.horizontalScrollViewRef}
             >
               {weeks}
