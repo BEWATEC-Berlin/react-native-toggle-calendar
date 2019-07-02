@@ -125,6 +125,9 @@ class Calendar extends Component {
         currentMonth: current.clone()
       });
     }
+    if (this.props.showCurrentDate !== nextProps.showCurrentDate) {
+      this.showCurrentDay();
+    }
     this.setState({
       horizontal: nextProps.horizontal
     });
@@ -345,6 +348,7 @@ class Calendar extends Component {
               style={[this.style.monthView, {marginBottom: 10}]}
               horizontal
               pagingEnabled
+              showsHorizontalScrollIndicator={false}
               ref={this.horizontalScrollViewRef}
             >
               {weeks}
