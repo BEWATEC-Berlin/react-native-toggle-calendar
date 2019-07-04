@@ -2,12 +2,16 @@ import React, {Component} from 'react';
 import {
   TouchableOpacity,
   Text,
-  View
+  View,
+  Dimensions,
+  StyleSheet
 } from 'react-native';
 import PropTypes from 'prop-types';
 import {shouldUpdate} from '../../../component-updater';
 
 import styleConstructor from './style';
+
+const { width } = Dimensions.get('window');
 
 class Day extends Component {
   static propTypes = {
@@ -40,10 +44,31 @@ class Day extends Component {
     return shouldUpdate(this.props, nextProps, ['state', 'children', 'marking', 'onPress', 'onLongPress']);
   }
 
+  getContentStyle = () => {
+    if (isSameDay(new Date(this.props.selected), new Date(this.props.date.timestamp))) {
+      return styles.selected;
+    }
+    if (isSameDay(new Date(), new Date(this.props.date.timestamp))) {
+      if (this.props.selected) {
+        return isSameDay(new Date(), new Date(this.props.date.timestamp))
+          ? styles.current
+          : styles.selected;
+      }
+      return !isSameDay(new Date(this.props.selected), new Date(this.props.date.timestamp))
+        ? styles.selected
+        : styles.current;
+    }
+    // if (isSameDay(new Date(admission), new Date(date.timestamp))) {
+    //   return selected ? styles.current : styles.selected;
+    // }
+    return {};
+  }
+
   render() {
     const containerStyle = [this.style.base];
     const textStyle = [this.style.text];
     const dotStyle = [this.style.dot];
+    let selectedStyle = [];
 
     let marking = this.props.marking || {};
     if (marking && marking.constructor === Array && marking.length) {
@@ -54,7 +79,7 @@ class Day extends Component {
     const isDisabled = typeof marking.disabled !== 'undefined' ? marking.disabled : this.props.state === 'disabled';
     let dot;
     if (marking.marked) {
-      dotStyle.push(this.style.visibleDot);
+      // dotStyle.push(this.style.visibleDot);
       if (marking.dotColor) {
         dotStyle.push({backgroundColor: marking.dotColor});
       }
@@ -62,9 +87,10 @@ class Day extends Component {
     }
 
     if (marking.selected) {
-      containerStyle.push(this.style.selected);
+      // containerStyle.push();
       if (marking.selectedColor) {
-        containerStyle.push({backgroundColor: marking.selectedColor});
+        // containerStyle.push();
+        selectedStyle.push(this.style.selected)
       }
       dotStyle.push(this.style.selectedDot);
       textStyle.push(this.style.selectedText);
@@ -73,8 +99,14 @@ class Day extends Component {
     } else if (this.props.state === 'today') {
       containerStyle.push(this.style.today);
       textStyle.push(this.style.todayText);
+      selectedStyle.push(this.style.todayCont)
     }
-
+    if (marking.selectedColor) {
+      // containerStyle.push();
+      selectedStyle.push(this.style.selected)
+    }
+    containerStyle.push({ minWidth: width / 7.15 })
+    // textStyle.push({ backgroundColor: marking.selectedColor })
     return (
       <TouchableOpacity
         style={containerStyle}
@@ -83,7 +115,9 @@ class Day extends Component {
         activeOpacity={marking.activeOpacity}
         disabled={marking.disableTouchEvent}
       >
-        <Text allowFontScaling={false} style={textStyle}>{String(this.props.children)}</Text>
+        <View style={selectedStyle}>
+          <Text allowFontScaling={false} style={textStyle}>{String(this.props.children)}</Text>
+        </View>
         {dot}
       </TouchableOpacity>
     );
