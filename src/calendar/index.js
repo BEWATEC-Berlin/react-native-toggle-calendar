@@ -24,6 +24,7 @@ const viewPropTypes = ViewPropTypes || View.propTypes;
 
 const EmptyArray = [];
 
+const { width } = Dimensions.get('window');
 // horizontal calendar will be scrolled to (offset * viewport width) to keep selected date visible
 let horizontalScrollViewOffset = 0;
 
@@ -150,7 +151,7 @@ class Calendar extends Component {
     const day = xdateToData(this.props.current).day;
     if (horizontalScrollView) {
       horizontalScrollView.scrollTo({
-        x: ((day - 1) * this.widthDay),
+        x: ((day) * (width / 7)),
         animated: true
       });
     }
