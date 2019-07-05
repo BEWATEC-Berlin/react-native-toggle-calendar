@@ -26,10 +26,10 @@ export default function styleConstructor(theme = {}) {
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#4d6eff',
-      width: 36,
-      height: 36,
+      width: 32,
+      height: 32,
       borderRadius: 4,
-      marginTop: -2
+      marginTop: -2,
     },
     today: {
       backgroundColor: appStyle.todayBackgroundColor,
@@ -38,10 +38,10 @@ export default function styleConstructor(theme = {}) {
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#9b9b9b',
-      width: 36,
-      height: 36,
+      width: 32,
+      height: 32,
       borderRadius: 4,
-      marginTop: -2
+      marginTop: -2,
     },
     todayText: {
       color: 'white',
@@ -65,6 +65,13 @@ export default function styleConstructor(theme = {}) {
     },
     selectedDot: {
       backgroundColor: appStyle.selectedDotColor,
+    },
+    weekName: {
+      textAlign: 'center',
+      fontSize: 13,
+      fontWeight: 'bold',
+      color: '#989db3',
+      fontFamily: 'AvenirNext-DemiBold',
     },
     ...(theme[STYLESHEET_ID] || {}),
   });

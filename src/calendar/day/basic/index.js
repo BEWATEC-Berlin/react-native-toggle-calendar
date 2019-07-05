@@ -13,6 +13,8 @@ import styleConstructor from './style';
 
 const { width } = Dimensions.get('window');
 
+const weekDaysNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
 class Day extends Component {
   static propTypes = {
     // TODO: disabled props should be removed
@@ -107,6 +109,7 @@ class Day extends Component {
     }
     containerStyle.push({ minWidth: width / 7.15 })
     // textStyle.push({ backgroundColor: marking.selectedColor })
+    const { horizontal, date } = this.props;
     return (
       <TouchableOpacity
         style={containerStyle}
@@ -115,6 +118,13 @@ class Day extends Component {
         activeOpacity={marking.activeOpacity}
         disabled={marking.disableTouchEvent}
       >
+        <View style={{ marginTop: -10 }}>
+          {horizontal ? (
+            <Text style={this.style.weekName} numberOfLines={1}>
+              {weekDaysNames[date.weekDay].toUpperCase()}
+            </Text>
+          ) : null}
+        </View>
         <View style={selectedStyle}>
           <Text allowFontScaling={false} style={textStyle}>{String(this.props.children)}</Text>
         </View>
