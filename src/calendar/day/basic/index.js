@@ -46,26 +46,6 @@ class Day extends Component {
     return shouldUpdate(this.props, nextProps, ['state', 'children', 'marking', 'onPress', 'onLongPress']);
   }
 
-  getContentStyle = () => {
-    if (isSameDay(new Date(this.props.selected), new Date(this.props.date.timestamp))) {
-      return styles.selected;
-    }
-    if (isSameDay(new Date(), new Date(this.props.date.timestamp))) {
-      if (this.props.selected) {
-        return isSameDay(new Date(), new Date(this.props.date.timestamp))
-          ? styles.current
-          : styles.selected;
-      }
-      return !isSameDay(new Date(this.props.selected), new Date(this.props.date.timestamp))
-        ? styles.selected
-        : styles.current;
-    }
-    // if (isSameDay(new Date(admission), new Date(date.timestamp))) {
-    //   return selected ? styles.current : styles.selected;
-    // }
-    return {};
-  }
-
   render() {
     const containerStyle = [this.style.base];
     const textStyle = [this.style.text];
