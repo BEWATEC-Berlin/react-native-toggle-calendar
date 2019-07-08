@@ -46,6 +46,26 @@ class Day extends Component {
     return shouldUpdate(this.props, nextProps, ['state', 'children', 'marking', 'onPress', 'onLongPress']);
   }
 
+  getContentStyle = () => {
+    if (isSameDay(new Date(this.props.selected), new Date(this.props.date.timestamp))) {
+      return styles.selected;
+    }
+    if (isSameDay(new Date(), new Date(this.props.date.timestamp))) {
+      if (this.props.selected) {
+        return isSameDay(new Date(), new Date(this.props.date.timestamp))
+          ? styles.current
+          : styles.selected;
+      }
+      return !isSameDay(new Date(this.props.selected), new Date(this.props.date.timestamp))
+        ? styles.selected
+        : styles.current;
+    }
+    // if (isSameDay(new Date(admission), new Date(date.timestamp))) {
+    //   return selected ? styles.current : styles.selected;
+    // }
+    return {};
+  }
+
   render() {
     const containerStyle = [this.style.base];
     const textStyle = [this.style.text];
@@ -65,13 +85,11 @@ class Day extends Component {
       if (marking.dotColor) {
         dotStyle.push({backgroundColor: marking.dotColor});
       }
-      dot = (<View style={dotStyle}/>);
+      dot = (<View style={dotStyle} />);
     }
 
     if (marking.selected) {
-      // containerStyle.push();
       if (marking.selectedColor) {
-        // containerStyle.push();
         selectedStyle.push(this.style.selected)
       }
       dotStyle.push(this.style.selectedDot);
@@ -88,7 +106,6 @@ class Day extends Component {
       selectedStyle.push(this.style.selected)
     }
     containerStyle.push({ minWidth: width / 7.15 })
-    // textStyle.push({ backgroundColor: marking.selectedColor })
     const { horizontal, date } = this.props;
     return (
       <TouchableOpacity
@@ -98,9 +115,9 @@ class Day extends Component {
         activeOpacity={marking.activeOpacity}
         disabled={marking.disableTouchEvent}
       >
-        <View style={{ marginTop: -10 }}>
+        <View>
           {horizontal ? (
-            <Text style={this.style.weekName} numberOfLines={1}>
+            <Text style={[this.style.weekName, {marginTop: -3, marginBottom: 10 }]} numberOfLines={1}>
               {weekDaysNames[date.weekDay].toUpperCase()}
             </Text>
           ) : null}

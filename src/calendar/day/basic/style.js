@@ -7,9 +7,9 @@ export default function styleConstructor(theme = {}) {
   const appStyle = { ...defaultStyle, ...theme };
   return StyleSheet.create({
     base: {
-      width: 32,
-      height: 32,
       alignItems: 'center',
+      minWidth: 36,
+      minHeight: 36,
     },
     text: {
       marginTop: Platform.OS === 'android' ? 4 : 6,
@@ -26,10 +26,9 @@ export default function styleConstructor(theme = {}) {
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#4d6eff',
-      width: 32,
-      height: 32,
-      borderRadius: 4,
-      marginTop: -2,
+      width: 36,
+      height: 36,
+      borderRadius: 13,
     },
     today: {
       backgroundColor: appStyle.todayBackgroundColor,
@@ -38,10 +37,9 @@ export default function styleConstructor(theme = {}) {
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#9b9b9b',
-      width: 32,
-      height: 32,
-      borderRadius: 4,
-      marginTop: -2,
+      width: 36,
+      height: 36,
+      borderRadius: 13,
     },
     todayText: {
       color: 'white',
