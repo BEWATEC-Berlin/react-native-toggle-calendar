@@ -151,7 +151,7 @@ class Calendar extends Component {
     const day = xdateToData(this.props.current).day;
     if (horizontalScrollView) {
       horizontalScrollView.scrollTo({
-        x: ((day) * (width / 7)),
+        x: ((day) * (width / 7.2)),
         animated: true
       });
     }

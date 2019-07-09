@@ -105,7 +105,7 @@ class Day extends Component {
       // containerStyle.push();
       selectedStyle.push(this.style.selected)
     }
-    containerStyle.push({ minWidth: width / 7.15 })
+    containerStyle.push({ minWidth: width / 7.2 })
     const { horizontal, date } = this.props;
     return (
       <TouchableOpacity
