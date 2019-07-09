@@ -111,6 +111,8 @@ class Calendar extends Component {
     this.updateMonth = this.updateMonth.bind(this);
     this.addMonth = this.addMonth.bind(this);
     this.pressDay = this.pressDay.bind(this);
+    this.onContentSizeChange = this.onContentSizeChange.bind(this);
+    this.onLayout = this.onLayout.bind(this);
     this.longPressDay = this.longPressDay.bind(this);
     this.shouldComponentUpdate = shouldComponentUpdate;
     this.showDay = null;
@@ -135,6 +137,10 @@ class Calendar extends Component {
         horizontalScrollView.scrollTo({ x: this.scrollWidth, animated: false });
       }, 200)
     }
+    if (this.props.scrollStart !== nextProps.scrollStart) {
+      const horizontalScrollView = this.horizontalScrollViewRef.current;
+      horizontalScrollView.scrollTo({ x: 0, animated: false });
+    }
     this.setState({
       horizontal: nextProps.horizontal
     });
@@ -155,7 +161,6 @@ class Calendar extends Component {
   showCurrentDay() {
     const horizontalScrollView = this.horizontalScrollViewRef.current;
     const day = xdateToData(new Date()).day;
-    console.tron.log(day);
     if (horizontalScrollView) {
       horizontalScrollView.scrollTo({
         x: ((day) * (width / 7.2)),
@@ -225,7 +230,7 @@ class Calendar extends Component {
     }
 
     if (!dateutils.sameMonth(day, this.state.currentMonth) && this.props.hideExtraDays) {
-      return (<View key={id} style={{flex: 1}}/>);
+      return (<View key={id} style={{flex: 1}} />);
     }
 
     const DayComp = this.getDayComponent();
@@ -312,7 +317,13 @@ class Calendar extends Component {
 
     return CalendarHeader;
   }
-
+  onContentSizeChange(width) {
+    this.scrollWidth = width;
+    if (this.props.onScrollSizeChange) this.props.onScrollSizeChange(width);
+  }
+  onLayout({ nativeEvent }) {
+    if (this.props.onLayoutScroll) this.props.onLayoutScroll(nativeEvent);
+  }
   render() {
     const days = dateutils.page(this.state.currentMonth, this.props.firstDay);
     const weeks = [];
@@ -359,7 +370,8 @@ class Calendar extends Component {
               onScrollEndDrag={this.props.onScrollEndDrag}
               showsHorizontalScrollIndicator={false}
               ref={this.horizontalScrollViewRef}
-              onContentSizeChange={(nativeEvent) => this.scrollWidth = nativeEvent}
+              onLayout={this.onLayout}
+              onContentSizeChange={this.onContentSizeChange}
               bouncesZoom
             >
               {weeks}
