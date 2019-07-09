@@ -26,7 +26,7 @@ class CalendarHeader extends Component {
   };
 
   static defaultProps = {
-    monthFormat: 'MMMM yyyy',
+    monthFormat: 'MMMM',
   };
 
   constructor(props) {
@@ -121,21 +121,18 @@ class CalendarHeader extends Component {
     return (
       <View>
         <View style={this.style.header}>
-          {leftArrow}
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ alignItems: 'flex-start' }}>
             <Text allowFontScaling={false} style={this.style.monthText} accessibilityTraits='header'>
               {this.props.month.toString(this.props.monthFormat)}
             </Text>
-            {indicator}
           </View>
-          {rightArrow}
         </View>
         {
           !this.props.hideDayNames &&
           <View style={this.style.week}>
             {this.props.weekNumbers && <Text allowFontScaling={false} style={this.style.dayHeader}></Text>}
             {weekDaysNames.map((day, idx) => (
-              <Text allowFontScaling={false} key={idx} accessible={false} style={this.style.dayHeader} numberOfLines={1} importantForAccessibility='no'>{day}</Text>
+              <Text allowFontScaling={false} key={idx} accessible={false} style={this.style.dayHeader} numberOfLines={1} importantForAccessibility='no'>{day.substring(0, 1)}</Text>
             ))}
           </View>
         }

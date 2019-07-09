@@ -12,7 +12,6 @@ export default function styleConstructor(theme = {}) {
       minHeight: 36,
     },
     text: {
-      marginTop: Platform.OS === 'android' ? 4 : 6,
       fontSize: appStyle.textDayFontSize,
       fontFamily: appStyle.textDayFontFamily,
       fontWeight: '600',
@@ -20,7 +19,6 @@ export default function styleConstructor(theme = {}) {
       backgroundColor: 'rgba(255, 255, 255, 0)',
     },
     alignedText: {
-      marginTop: Platform.OS === 'android' ? 4 : 6,
     },
     selected: {
       alignItems: 'center',
@@ -29,6 +27,7 @@ export default function styleConstructor(theme = {}) {
       width: 36,
       height: 36,
       borderRadius: 13,
+      marginTop: -5,
     },
     today: {
       backgroundColor: appStyle.todayBackgroundColor,
@@ -40,6 +39,7 @@ export default function styleConstructor(theme = {}) {
       width: 36,
       height: 36,
       borderRadius: 13,
+      marginTop: -5
     },
     todayText: {
       color: 'white',

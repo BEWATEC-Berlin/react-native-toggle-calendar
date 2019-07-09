@@ -18,7 +18,9 @@ export default function(theme={}) {
       fontFamily: appStyle.textMonthFontFamily,
       fontWeight: appStyle.textMonthFontWeight,
       color: appStyle.monthTextColor,
-      margin: 10
+      margin: 10,
+      marginLeft: 0,
+      marginBottom: 5,
     },
     arrow: {
       padding: 10
@@ -45,7 +47,8 @@ export default function(theme={}) {
       textAlign: 'center',
       fontSize: appStyle.textDayHeaderFontSize,
       fontFamily: appStyle.textDayHeaderFontFamily,
-      color: appStyle.textSectionTitleColor
+      color: appStyle.textSectionTitleColor,
+      fontWeight: appStyle.textDayHeaderFontWeight
     },
     ...(theme[STYLESHEET_ID] || {})
   });

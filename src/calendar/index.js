@@ -115,7 +115,7 @@ class Calendar extends Component {
     this.shouldComponentUpdate = shouldComponentUpdate;
     this.showDay = null;
     this.widthDay = 12;
-
+    this.scrollWidth = 2000;
     this.horizontalScrollViewRef = React.createRef();
   }
 
@@ -128,6 +128,10 @@ class Calendar extends Component {
     }
     if (this.props.showCurrentDate !== nextProps.showCurrentDate) {
       this.showCurrentDay();
+    }
+    if (this.props.scrollEnd !== nextProps.scrollEnd) {
+      const horizontalScrollView = this.horizontalScrollViewRef.current;
+      horizontalScrollView.scrollTo({ x: this.scrollWidth, animated: true });
     }
     this.setState({
       horizontal: nextProps.horizontal
@@ -148,7 +152,7 @@ class Calendar extends Component {
 
   showCurrentDay() {
     const horizontalScrollView = this.horizontalScrollViewRef.current;
-    const day = xdateToData(this.props.current).day;
+    const day = xdateToData(new Date()).day;
     if (horizontalScrollView) {
       horizontalScrollView.scrollTo({
         x: ((day) * (width / 7.2)),
@@ -349,8 +353,11 @@ class Calendar extends Component {
               style={[this.style.monthView, {marginBottom: 10}]}
               horizontal
               pagingEnabled
+              onScrollEndDrag={this.props.onScrollEndDrag}
               showsHorizontalScrollIndicator={false}
               ref={this.horizontalScrollViewRef}
+              onContentSizeChange={(nativeEvent) => this.scrollWidth = nativeEvent}
+              bouncesZoom
             >
               {weeks}
             </ScrollView>

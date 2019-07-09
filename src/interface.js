@@ -10,10 +10,10 @@ function padNumber(n) {
 function xdateToData(xdate) {
   const dateString = xdate.toString('yyyy-MM-dd');
   return {
-    year: xdate.getFullYear(),
-    month: xdate.getMonth() + 1,
-    day: xdate.getDate(),
-    weekDay: xdate.getDay(),
+    year: new Date(xdate).getFullYear(),
+    month: new Date(xdate).getMonth() + 1,
+    day: new Date(xdate).getDate(),
+    weekDay: new Date(xdate).getDay(),
     timestamp: XDate(dateString, true).getTime(),
     dateString: dateString
   };
@@ -27,7 +27,7 @@ function parseDate(d) {
   } else if (d instanceof XDate) { // xdate
     return XDate(d.toString('yyyy-MM-dd'), true);
   } else if (d.getTime) { // javascript date
-    const dateString = d.getFullYear() + '-' + padNumber((d.getMonth() + 1)) + '-' + padNumber(d.getDate());
+    const dateString = new Date(d).getFullYear() + '-' + padNumber((d.getMonth() + 1)) + '-' + padNumber(d.getDate());
     return XDate(dateString, true);
   } else if (d.year) {
     const dateString = d.year + '-' + padNumber(d.month) + '-' + padNumber(d.day);
