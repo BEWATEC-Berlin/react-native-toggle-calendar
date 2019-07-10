@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import XDate from 'xdate';
 import dateutils from '../dateutils';
 import {xdateToData, parseDate} from '../interface';
+import * as Animatable from 'react-native-animatable';
 import styleConstructor from './style';
 import Day from './day/basic';
 import UnitDay from './day/period';
@@ -307,7 +308,7 @@ class Calendar extends Component {
       week.unshift(this.renderWeekNumber(days[days.length - 1].getWeek()));
     }
 
-    return (<View style={this.style.week} key={id}>{week}</View>);
+    return (<Animatable.View animation={this.props.moveScrollViewTo} style={this.style.week} key={id}>{week}</Animatable.View>);
   }
 
   getCalendarHeaderComponent() {

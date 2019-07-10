@@ -108,25 +108,33 @@ class Day extends Component {
     containerStyle.push({ minWidth: width / 7.2 })
     const { horizontal, date } = this.props;
     return (
-      <TouchableOpacity
-        style={containerStyle}
-        onPress={this.onDayPress}
-        onLongPress={this.onDayLongPress}
-        activeOpacity={marking.activeOpacity}
-        disabled={marking.disableTouchEvent}
-      >
+      <View style={containerStyle}>
         <View>
           {horizontal ? (
-            <Text style={[this.style.weekName, {marginTop: -3, marginBottom: 10 }]} numberOfLines={1}>
-              {weekDaysNames[date.weekDay].toUpperCase()}
-            </Text>
+            <TouchableOpacity
+              activeOpacity={marking.activeOpacity}
+              disabled={marking.disableTouchEvent}
+              onPress={this.onDayPress}
+              onLongPress={this.onDayLongPress}
+            >
+              <Text style={[this.style.weekName, {marginTop: -3, marginBottom: 10 }]} numberOfLines={1}>
+                {weekDaysNames[date.weekDay].toUpperCase()}
+              </Text>
+            </TouchableOpacity>
           ) : null}
         </View>
         <View style={selectedStyle}>
-          <Text allowFontScaling={false} style={textStyle}>{String(this.props.children)}</Text>
+          <TouchableOpacity
+            activeOpacity={marking.activeOpacity}
+            disabled={marking.disableTouchEvent}
+            onPress={this.onDayPress}
+            onLongPress={this.onDayLongPress}
+          >
+            <Text allowFontScaling={false} style={textStyle}>{String(this.props.children)}</Text>
+          </TouchableOpacity>
         </View>
         {dot}
-      </TouchableOpacity>
+      </View>
     );
   }
 }
